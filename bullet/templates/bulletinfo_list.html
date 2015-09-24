@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+{% load bullet_extra %}
+<body>
+    <h1>飞船挂弹列表</h1>
+
+    <form class="well form-search" id="search" action="" method="get">
+        <input type="text" size="40" name="made_in" placeholder="请输入产地" value="{{ made_in }}"/>
+        <input type="submit" class="btn" value="查询"/>
+        &nbsp;&nbsp;
+        <a href="{% url 'bullet-create' %}">添加弹药</a>
+    </form>
+
+    <table border=1 align="middle">
+        <thead>
+            <tr>
+                <th>生产日期</th>
+                <th>产地</th>
+                <th>型号</th>
+                <th>数量</th>
+                <th>单价</th>
+                <th>总价值</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for item in object_list %}
+            <tr>
+                <td>{{ item.made_date | date:"Y-m-d" }}</td>
+                <td>{{ item.made_in}}</td>
+                <td>{{ item.bullet_model }}</td>
+                <td>{{ item.bullet_num }}</td>
+                <td>{{ item.bullet_price | stringformat:'.2f' | append:'$' }}</td>
+                <td>{{ item.bullet_num | total_price:item.bullet_price | stringformat:'.2f' | append:'$'}}</td>
+                <td><a href="{% url 'bullet-update' item.id%}">编辑</a>&nbsp;<a href="{% url 'bullet-delete' item.id %}">删除</a></td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    {% if is_paginated %}
+        <div>
+            {% if page_obj.has_previous %}
+                <a href="?page=1&made_in={{ made_in }}">首页</a>&nbsp;
+                <a href="?page={{ page_obj.previous_page_number }}&made_in={{ made_in }}">上一页</a>
+            {% endif %}
+
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}&made_in={{ made_in }}">下一页</a>&nbsp;
+                <a href="?page={{ page_obj.paginator.num_pages }}&made_in={{ made_in }}">尾页</a>
+            {% endif %}
+        </div>
+
+        <div>
+            <label>第{{ page_obj.number }}页，共{{ page_obj.paginator.num_pages }}页({{ page_obj.paginator.count }})</label>
+        </div>
+    {% endif %}
+</body>
+</html>
